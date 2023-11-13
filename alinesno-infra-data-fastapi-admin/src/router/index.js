@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 /* Layout */
-//import Layout from '@/layout/SaaSLayout'
-import Layout from '@/layout'
+import Layout from '@/layout/SaaSLayout'
+// import Layout from '@/layout'
 
 /**
  * Note: 路由配置项
@@ -60,12 +60,12 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard', affix: true }
       },
 
-      // {
-      //   path: '/dashboard/smartService',
-      //   component: () => import('@/views/smartService'),
-      //   name: '/dashboard/smartService',
-      //   meta: { title: '智能客服', icon: 'dashboard', affix: true }
-      // },
+      {
+        path: '/dashboard/smartService',
+        component: () => import('@/views/smartService'),
+        name: '/dashboard/smartService',
+        meta: { title: '智能客服', icon: 'dashboard', affix: true }
+      },
       // {
       //   path: '/dashboard/serviceList',
       //   component: () => import('@/views/serviceList'),
@@ -85,57 +85,44 @@ export const constantRoutes = [
         meta: { title: '学习手册', icon: 'dashboard', affix: true }
       },
 
-      // ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      // >>>>>>>>>>>>>> message_router_start >>>>>>>>>>>>>>>>>>>>>
       {
-        path: '/createGateway',
-        name: 'createGateway',
-        hidden: true,
-        component: () => import('@/views/gateway/createGateway'),
-        meta: { title: '创建网关服务', icon: 'dashboard', affix: true }
-      },
+        path: '/data/fastapi/datasource/index',
+        component: () => import('@/views/data/fastapi/datasource/index'),
+        name: '/data/fastapi/datasource/index',
+        meta: { title: '数据源管理', icon: 'dashboard', affix: true }
+      }, 
       {
-        path: '/gatewayTopology',
-        name: 'gatewayTopology',
-        hidden: true,
-        component: () => import('@/views/gateway/gatewayTopology'),
-        meta: { title: '网关路由拓扑结构', icon: 'dashboard', affix: true }
-      },
+        path: '/data/fastapi/application/index',
+        component: () => import('@/views/data/fastapi/application/index'),
+        name: '/data/fastapi/application/index',
+        meta: { title: '应用管理', icon: 'dashboard', affix: true }
+      }, 
       {
-        path: '/createClient',
-        name: 'createClient',
-        hidden: true,
-        component: () => import('@/views/gateway/createClient'),
-        meta: { title: '创建客户端', icon: 'dashboard', affix: true }
-      },
+        path: '/data/fastapi/api/index',
+        component: () => import('@/views/data/fastapi/api/index'),
+        name: '/data/fastapi/api/index',
+        meta: { title: 'API管理', icon: 'dashboard', affix: true }
+      }, 
       {
-        path: '/addGatewayClient',
-        name: 'addGatewayClient',
-        hidden: true,
-        component: () => import('@/views/gateway/addGatewayClient'),
-        meta: { title: '添加网关客户端', icon: 'dashboard', affix: true }
-      },
+        path: '/data/fastapi/function/index',
+        component: () => import('@/views/data/fastapi/function/index'),
+        name: '/data/fastapi/function/index',
+        meta: { title: 'UDF管理', icon: 'dashboard', affix: true }
+      }, 
       {
-        path: '/addClientGateway',
-        name: 'addClientGateway',
-        hidden: true,
-        component: () => import('@/views/gateway/addClientGateway'),
-        meta: { title: '添加客户端网关', icon: 'dashboard', affix: true }
-      },
+        path: '/data/fastapi/monitor/index',
+        component: () => import('@/views/data/fastapi/monitor/index'),
+        name: '/data/fastapi/monitor/index',
+        meta: { title: '运行监控', icon: 'dashboard', affix: true }
+      }, 
       {
-        path: '/addGroovyScript',
-        name: 'addGroovyScript',
-        hidden: true,
-        component: () => import('@/views/gateway/addGroovyScript'),
-        meta: { title: '添加规则组件', icon: 'dashboard', affix: true }
-      },
-      {
-        path: '/createBalanced',
-        name: 'createBalanced',
-        hidden: true,
-        component: () => import('@/views/gateway/createBalanced'),
-        meta: { title: '创建负载均衡', icon: 'dashboard', affix: true }
-      },
-
+        path: '/data/fastapi/system/index',
+        component: () => import('@/views/data/fastapi/system/index'),
+        name: '/data/fastapi/system/index',
+        meta: { title: '系统设置', icon: 'dashboard', affix: true }
+      }, 
+      // >>>>>>>>>>>>>> message_router_end   >>>>>>>>>>>>>>>>>>>>>
 
     ]
   },
