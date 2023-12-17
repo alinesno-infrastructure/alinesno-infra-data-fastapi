@@ -1,4 +1,4 @@
-package com.alinesno.infra.data.fastapi.api.provider;
+package com.alinesno.infra.data.fastapi.gateway.provider;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
