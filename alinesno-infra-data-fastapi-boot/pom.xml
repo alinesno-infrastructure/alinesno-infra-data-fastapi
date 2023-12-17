@@ -33,7 +33,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.alinesno.infra.data</groupId>
-			<artifactId>alinesno-infra-data-fastapi-api</artifactId>
+			<artifactId>alinesno-infra-data-fastapi-gateway</artifactId>
 			<version>${revision}</version>
 		</dependency>
 
