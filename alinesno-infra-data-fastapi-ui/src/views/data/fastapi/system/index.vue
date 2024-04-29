@@ -1,287 +1,247 @@
 <template>
    <div class="app-container">
-      <el-row :gutter="20">
-         <!--应用数据-->
-         <el-col :span="24" :xs="24">
-            <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
-               <el-form-item label="应用名称" prop="dbName">
-                  <el-input v-model="queryParams.dbName" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+    <div class="label-title">
+      <div class="tip">企业主题配置</div>
+      <div class="sub-tip">根据企业自定义主题，配置团队或者企业界面</div>
+    </div>
+    <div class="form-container" >
+      <el-form
+        :model="form"
+        :rules="rules"
+        v-loading="loading"
+        ref="form"
+        label-width="180px"
+        class="demo-form">
+
+        <el-form-item label="登陆提示信息" prop="themeCode">
+          <el-input type="input" show-word-limit v-model="form.themeCode" readonly placeholder="请输入主题代码">
+            <el-button slot="append" @click="configTheme()" icon="el-icon-edit">配置品牌</el-button>
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="登陆Logo" prop="loginStyle">
+          <el-row>
+            <el-col :span="17" v-for="(o, index) in loginStyle" :key="index" :offset="index > 0 ? 1 : 0">
+
+              <el-card :body-style="{ padding: '0px !important' }" shadow="never">
+                <img :src="'http://data.linesno.com/icons/login/style-0'+(index+1)+'.png'" class="image">
+                <div style="padding: 14px;">
+                  <span>{{ o.desc }}</span>
+                  <div class="bottom clearfix">
+                    <el-button @click="selectStyle(o)" type="text" class="button">选择</el-button>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="登陆Banner" prop="loginStyle">
+          <el-row>
+            <el-col :span="17" v-for="(o, index) in loginStyle" :key="index" :offset="index > 0 ? 1 : 0">
+
+              <el-card :body-style="{ padding: '0px !important' }" shadow="never">
+                <img :src="'http://data.linesno.com/icons/login/style-0'+(index+2)+'.png'" class="image">
+                <div style="padding: 14px;">
+                  <span>{{ o.desc }}</span>
+                  <div class="bottom clearfix">
+                    <el-button @click="selectStyle(o)" type="text" class="button">选择</el-button>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-row>
+            <el-col :span="24">
+               <el-form-item label="权限年份" prop="defaultIndex">
+                  <el-input type="input" maxlength="500" show-word-limit v-model="form.defaultIndex" placeholder="权限年份"></el-input>
                </el-form-item>
-               <el-form-item label="应用名称" prop="dbName">
-                  <el-input v-model="queryParams['condition[dbName|like]']" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-col> 
+            <el-col :span="24">
+               <el-form-item label="版权信息" prop="defaultIndex">
+                  <el-input type="input" maxlength="500" show-word-limit v-model="form.defaultIndex" placeholder="版权信息"></el-input>
                </el-form-item>
-               <el-form-item>
-                  <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                  <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-               </el-form-item>
-            </el-form>
+            </el-col> 
+        </el-row>
 
-            <el-row :gutter="10" class="mb8">
+<!--        <el-form-item label="登陆验证码">-->
+<!--          <el-switch v-model="form.enableValidate"-->
+<!--            :active-value="1"-->
+<!--            :inactive-value="0"-->
+<!--          ></el-switch>-->
+<!--        </el-form-item>-->
 
-               <el-col :span="1.5">
-                  <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-               </el-col>
-               <el-col :span="1.5">
-                  <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate">修改</el-button>
-               </el-col>
-               <el-col :span="1.5">
-                  <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
-               </el-col>
+        <br/>
 
-               <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
-            </el-row>
-
-            <el-table v-loading="loading" :data="ApplicationList" @selection-change="handleSelectionChange">
-               <el-table-column type="selection" width="50" align="center" />
-               <el-table-column label="图标" align="center" with="80" key="status" v-if="columns[5].visible">
-               </el-table-column>
-
-               <!-- 业务字段-->
-               <el-table-column label="应用名称" align="center" key="dbName" prop="dbName" v-if="columns[0].visible" />
-               <el-table-column label="应用描述" align="center" key="dbDesc" prop="dbDesc" v-if="columns[1].visible" :show-overflow-tooltip="true" />
-               <el-table-column label="表数据量" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-               <el-table-column label="类型" align="center" key="dbType" prop="dbType" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-               <el-table-column label="应用地址" align="center" key="jdbcUrl" prop="jdbcUrl" v-if="columns[4].visible" width="120" />
-               <el-table-column label="状态" align="center" key="hasStatus" v-if="columns[5].visible" />
-
-               <el-table-column label="添加时间" align="center" prop="addTime" v-if="columns[6].visible" width="160">
-                  <template #default="scope">
-                     <span>{{ parseTime(scope.row.addTime) }}</span>
-                  </template>
-               </el-table-column>
-
-               <!-- 操作字段  -->
-               <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
-                  <template #default="scope">
-                     <el-tooltip content="修改" placement="top" v-if="scope.row.ApplicationId !== 1">
-                        <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                           v-hasPermi="['system:Application:edit']"></el-button>
-                     </el-tooltip>
-                     <el-tooltip content="删除" placement="top" v-if="scope.row.ApplicationId !== 1">
-                        <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                           v-hasPermi="['system:Application:remove']"></el-button>
-                     </el-tooltip>
-                  </template>
-
-               </el-table-column>
-            </el-table>
-            <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
-         </el-col>
-      </el-row>
-
-      <!-- 添加或修改应用配置对话框 -->
-      <el-dialog :title="title" v-model="open" width="900px" append-to-body>
-         <el-form :model="form" :rules="rules" ref="databaseRef" label-width="100px">
-            <el-row>
-               <el-col :span="24">
-                  <el-form-item label="名称" prop="dbName">
-                     <el-input v-model="form.dbName" placeholder="请输入应用名称" maxlength="50" />
-                  </el-form-item>
-               </el-col>
-            </el-row>
-            <el-row>
-               <el-col :span="24">
-                  <el-form-item label="连接" prop="jdbcUrl">
-                     <el-input v-model="form.jdbcUrl" placeholder="请输入jdbcUrl连接地址" maxlength="128" />
-                  </el-form-item>
-               </el-col>
-               <el-col :span="24">
-                  <el-form-item label="类型" prop="dbType">
-                     <el-input v-model="form.dbType" placeholder="请输入类型" maxlength="50" />
-                  </el-form-item>
-               </el-col>
-            </el-row>
-            <el-row>
-               <el-col :span="24">
-                  <el-form-item label="用户名" prop="dbUsername">
-                     <el-input v-model="form.dbUsername" placeholder="请输入连接用户名" maxlength="30" />
-                  </el-form-item>
-               </el-col>
-               <el-col :span="24">
-                  <el-form-item label="密码" prop="dbPasswd">
-                     <el-input v-model="form.dbPasswd" placeholder="请输入应用密码" type="password" maxlength="30" show-password />
-                  </el-form-item>
-               </el-col>
-            </el-row>
-
-            <el-row>
-               <el-col :span="24">
-                  <el-form-item label="备注" prop="dbDesc">
-                     <el-input v-model="form.dbDesc" placeholder="请输入应用备注"></el-input>
-                  </el-form-item>
-               </el-col>
-            </el-row>
-         </el-form>
-         <template #footer>
-            <div class="dialog-footer">
-               <el-button type="primary" @click="submitForm">确 定</el-button>
-               <el-button @click="cancel">取 消</el-button>
-            </div>
-         </template>
-      </el-dialog>
-
-   </div>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('form')">
+            保存
+          </el-button>
+          <el-button @click="resetForm">
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
 </template>
 
-<script setup name="Application">
+<script>
 
-import {
-   listApplication,
-   delApplication,
-   getApplication,
-   updateApplication,
-   addApplication
-} from "@/api/data/fastapi/application";
+//   import {
+//     addLoginSetting,
+//     updateLoginSetting,
+//     getCurrentConfig } from "@/api/business/OauthLoginSetting";
 
-const router = useRouter();
-const { proxy } = getCurrentInstance();
+//   import ImageUpload from "alinesno-ui/packages/ImageUpload"
 
-// 定义变量
-const ApplicationList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
-const postOptions = ref([]);
-const roleOptions = ref([]);
+  export default {
 
-// 列显隐信息
-const columns = ref([
-   { key: 0, label: `应用名称`, visible: true },
-   { key: 1, label: `应用描述`, visible: true },
-   { key: 2, label: `表数据量`, visible: true },
-   { key: 3, label: `类型`, visible: true },
-   { key: 4, label: `应用地址`, visible: true },
-   { key: 5, label: `状态`, visible: true },
-   { key: 6, label: `更新时间`, visible: true }
-]);
+   //  components:{
+   //    ImageUpload
+   //  },
+    data() {
+      return {
+        loginStyle:[
+          {id:'1' , icon:'asserts/images/style-01.png' , desc:'经典版本的登陆UI，提供更加流畅的交互体验'} ,
+        ],
+        logoStyle:[
+          {id:'3' , icon:'asserts/images/style-03.png' , desc:'平台版本的登陆界面，大气简洁的登陆界面，更贴近平台化'} ,
+        ],
+        theme: null , 
+        form: {
+          themeCode: null , 
+          loginStyle:'1' ,
+          enableSociety: '1' ,
+          enableFindPwd: '1' ,
+          logoImg: '' ,
+          lockTime: 250 ,
+          errorCount: 5,
+          defaultIndex: '' , 
+          enableValidate: '1',
+        },
+        // 表单参数
+        rules: {
+          logoTitle: [
+            { required: true, message: "请输入登陆标题", trigger: "blur" },
+          ],
+          logoTitle: [
+            { required: true, message: "请输入登陆标题", trigger: "blur" },
+          ],
+          loginDescription: [
+            { required: true, message: "请输入登陆描述", trigger: "blur" },
+          ],
+          loginLogo: [
+            { required: true, message: "请至少上传一张Logo图", trigger: "blur" },
+          ],
+          logoBackgroun: [
+            { required: true, message: "请至少上传一张背景图", trigger: "blur" },
+          ],
+          defaultIndex: [
+            { required: true, message: "请输入默认主页", trigger: "blur" },
+            { type: 'url',message: "请输入正确的链接地址",trigger: 'blur'},
+          ],
+        },
+        currentSiteId: null,
+        // 遮罩层
+        loading: false ,
+      };
+    },
+    created(){
+      // this.getSetting();
+    },
+    methods: {
+      // getSetting(){
+      //   getCurrentConfig().then(response => {
 
-const data = reactive({
-   form: {},
-   queryParams: {
-      pageNum: 1,
-      pageSize: 10,
-      dbName: undefined,
-      dbDesc: undefined
-   },
-   rules: {
-      dbName: [{ required: true, message: "名称不能为空", trigger: "blur" }] , 
-      jdbcUrl: [{ required: true, message: "连接不能为空", trigger: "blur" }],
-      dbType: [{ required: true, message: "类型不能为空", trigger: "blur" }] , 
-      dbUsername: [{ required: true , message: "用户名不能为空", trigger: "blur"}],
-      dbPasswd: [{ required: true, message: "密码不能为空", trigger: "blur" }] , 
-      dbDesc: [{ required: true, message: "备注不能为空", trigger: "blur" }] 
-   }
-});
+      //     if(response.theme.id != null){
+      //       this.form = response.data ;
+      //       this.theme = response.theme ;
+            
+      //       if(this.theme){
+      //         this.form.themeCode = response.theme.themeCode ;
+      //       }
 
-const { queryParams, form, rules } = toRefs(data);
-
-/** 查询应用列表 */
-function getList() {
-   loading.value = true;
-   listApplication(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
-      loading.value = false;
-      ApplicationList.value = res.rows;
-      total.value = res.total;
-   });
-};
-
-/** 搜索按钮操作 */
-function handleQuery() {
-   queryParams.value.pageNum = 1;
-   getList();
-};
-
-/** 重置按钮操作 */
-function resetQuery() {
-   dateRange.value = [];
-   proxy.resetForm("queryRef");
-   queryParams.value.deptId = undefined;
-   proxy.$refs.deptTreeRef.setCurrentKey(null);
-   handleQuery();
-};
-/** 删除按钮操作 */
-function handleDelete(row) {
-   const ApplicationIds = row.id || ids.value;
-   proxy.$modal.confirm('是否确认删除应用编号为"' + ApplicationIds + '"的数据项？').then(function () {
-      return delApplication(ApplicationIds);
-   }).then(() => {
-      getList();
-      proxy.$modal.msgSuccess("删除成功");
-   }).catch(() => { });
-};
-
-/** 选择条数  */
-function handleSelectionChange(selection) {
-   ids.value = selection.map(item => item.id);
-   single.value = selection.length != 1;
-   multiple.value = !selection.length;
-};
-
-/** 重置操作表单 */
-function reset() {
-   form.value = {
-      id: undefined,
-      deptId: undefined,
-      ApplicationName: undefined,
-      nickName: undefined,
-      password: undefined,
-      phonenumber: undefined,
-      status: "0",
-      remark: undefined,
-   };
-   proxy.resetForm("databaseRef");
-};
-/** 取消按钮 */
-function cancel() {
-   open.value = false;
-   reset();
-};
-
-/** 新增按钮操作 */
-function handleAdd() {
-   reset();
-   open.value = true;
-   title.value = "添加应用";
-};
-
-/** 修改按钮操作 */
-function handleUpdate(row) {
-   reset();
-   const ApplicationId = row.id || ids.value;
-   getApplication(ApplicationId).then(response => {
-      form.value = response.data;
-      open.value = true;
-      title.value = "修改应用";
-   });
-};
-
-/** 提交按钮 */
-function submitForm() {
-   proxy.$refs["databaseRef"].validate(valid => {
-      if (valid) {
-         if (form.value.ApplicationId != undefined) {
-            updateApplication(form.value).then(response => {
-               proxy.$modal.msgSuccess("修改成功");
-               open.value = false;
-               getList();
-            });
-         } else {
-            addApplication(form.value).then(response => {
-               proxy.$modal.msgSuccess("新增成功");
-               open.value = false;
-               getList();
-            });
-         }
-      }
-   });
-};
-
-getList();
-
+      //     }
+      //   })
+      // },
+      // uploadImg(data){
+      //   console.log('data = ' + data) ;
+      // } , 
+      // selectStyle(item){
+      //   this.form.loginStyle = item.id;  
+      //   console.log('item = ' + item.id) ;
+      // } ,
+      // copySuccess() {
+      //   this.$message.success("复制成功")
+      // },
+      // configTheme(){
+      //   this.$router.push('/business/theme/settings') ;
+      // },
+      // submitForm(formName) {
+      //   this.$refs[formName].validate((valid) => {
+      //     if (valid) {
+      //       this.loading = true ;
+      //       if (this.form.id != null) {
+      //         updateLoginSetting(this.form).then(response => {
+      //           this.msgSuccess("修改成功");
+      //           this.loading = false ;
+      //         });
+      //       } else {
+      //         addLoginSetting(this.form).then(response => {
+      //           this.msgSuccess("新增成功");
+      //           this.loading = false ;
+      //         });
+      //       }
+      //     }
+      //   });
+      // },
+      // resetForm() {
+      //   this.$refs["form"].resetFields();
+      //   this.getSetting();
+      // }
+    },
+  };
 </script>
+
+<style scoped lang="scss">
+  .form-container {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+  }
+
+  .label-title {
+    text-align: center;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+
+    .tip {
+      padding-bottom: 10px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .sub-tip {
+      font-size: 13px;
+      text-align: center;
+      padding: 10px;
+    }
+  }
+
+  .image{
+    width:100%;
+    height: 120px ;
+  }
+
+  .select-card {
+    border: 1px solid rgb(0, 91, 212) ;
+  }
+</style>
+
+

@@ -99,6 +99,12 @@ export const constantRoutes = [
         meta: { title: '应用管理', icon: 'dashboard', affix: true }
       }, 
       {
+        path: '/data/fastapi/group/index',
+        component: () => import('@/views/data/fastapi/group/index'),
+        name: '/data/fastapi/group/index',
+        meta: { title: '接口分组', icon: 'dashboard', affix: true }
+      }, 
+      {
         path: '/data/fastapi/api/index',
         component: () => import('@/views/data/fastapi/api/index'),
         name: '/data/fastapi/api/index',
@@ -115,6 +121,12 @@ export const constantRoutes = [
         component: () => import('@/views/data/fastapi/monitor/index'),
         name: '/data/fastapi/monitor/index',
         meta: { title: '运行监控', icon: 'dashboard', affix: true }
+      }, 
+      {
+        path: '/data/fastapi/record/index',
+        component: () => import('@/views/data/fastapi/record/index'),
+        name: '/data/fastapi/record/index',
+        meta: { title: '操作记录', icon: 'dashboard', affix: true }
       }, 
       {
         path: '/data/fastapi/system/index',

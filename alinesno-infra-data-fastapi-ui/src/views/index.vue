@@ -49,7 +49,7 @@ const currentEnvClusterObj = ref({
   appName : '数据接口管理服务'  , 
   clusterName: '可靠性消息中间件集成'  , 
   apiServerUrl: 'http://portal.infra.linesno.com' , 
-  desc: '基于高可用分布式集群技术的消息中间件服务,具有大规模、高可靠、高并发访问、可扩展'
+  desc: '面向接口开发人员的低代码工具，只需在页面上编写sql，并配置好参数，就可以自动生成API接口'
 }) 
 
 </script>
