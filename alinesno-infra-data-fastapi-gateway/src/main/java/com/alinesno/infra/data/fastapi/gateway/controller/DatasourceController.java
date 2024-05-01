@@ -3,19 +3,24 @@ package com.alinesno.infra.data.fastapi.gateway.controller;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
+import com.alinesno.infra.common.facade.response.AjaxResult;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
+import com.alinesno.infra.data.fastapi.api.dto.CheckDbConnectResult;
+import com.alinesno.infra.data.fastapi.api.dto.DatasourceDto;
 import com.alinesno.infra.data.fastapi.entity.DatasourceEntity;
+import com.alinesno.infra.data.fastapi.gateway.utils.DbParserUtils;
 import com.alinesno.infra.data.fastapi.service.IDatasourceService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.lang.exception.RpcServiceRuntimeException;
 
 /**
  * 处理与BusinessLogEntity相关的请求的Controller。
@@ -46,6 +51,55 @@ public class DatasourceController extends BaseController<DatasourceEntity, IData
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
         return this.toPage(model, this.getFeign(), page);
+    }
+
+    @PostMapping("/checkDB")
+    @ResponseBody
+    public AjaxResult checkDBConnect(@Validated @RequestBody DatasourceDto dto ) {
+
+        DatasourceEntity dbListEntity = new DatasourceEntity() ;
+        BeanUtils.copyProperties(dto, dbListEntity) ;
+
+        DbParserUtils.parserJdbcUrl(dbListEntity , dto.getJdbcUrl()) ;
+
+        CheckDbConnectResult result = service.checkDbConnect(dbListEntity);
+        if (result.isAccepted()) {
+            return AjaxResult.success("操作成功", result);
+        } else {
+            return AjaxResult.error("数据库检验失败", result);
+        }
+    }
+
+    @PutMapping("/modifyDb")
+    @ResponseBody
+    public AjaxResult modifyDb(@Validated @RequestBody DatasourceDto dto ) {
+
+        DatasourceEntity dbListEntity = new DatasourceEntity() ;
+
+        BeanUtils.copyProperties(dto, dbListEntity) ;
+        DbParserUtils.parserJdbcUrl(dbListEntity , dto.getJdbcUrl()) ;
+
+        try {
+            return super.update(null, dbListEntity) ;
+        } catch (Exception e) {
+            throw new RpcServiceRuntimeException(e.getMessage()) ;
+        }
+    }
+
+    @PostMapping("/saveDb")
+    @ResponseBody
+    public AjaxResult saveDb(@Validated @RequestBody DatasourceDto dto ) {
+
+        DatasourceEntity dbListEntity = new DatasourceEntity() ;
+
+        BeanUtils.copyProperties(dto, dbListEntity) ;
+        DbParserUtils.parserJdbcUrl(dbListEntity , dto.getJdbcUrl()) ;
+
+        try {
+            return super.save(null, dbListEntity) ;
+        } catch (Exception e) {
+            throw new RpcServiceRuntimeException(e.getMessage()) ;
+        }
     }
 
     @Override

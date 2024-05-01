@@ -1,43 +1,81 @@
 package com.alinesno.infra.data.fastapi.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alinesno.infra.common.facade.mapper.entity.InfraBaseEntity;
+import com.alinesno.infra.common.security.mapper.AESEncryptHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.gitee.sunchenbin.mybatis.actable.annotation.Column;
-import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant;
+import com.gitee.sunchenbin.mybatis.actable.annotation.ColumnComment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@TableName("api_datasource")
+@TableName(value = "api_datasource" , autoResultMap = true)
 @Data
 public class DatasourceEntity extends InfraBaseEntity {
 
+    @ColumnComment("描述")
+    @Excel(name = "描述")
+    @TableField("db_desc")
+    private String dbDesc;
+
+    // fields
     /**
-     * 名称
+     * 数据库名称
      */
-    @TableField("name")
-    @Column(comment = "名称", type = MySqlTypeConstant.VARCHAR, length = 255)
-    private String name;
+    @ColumnComment("数据库名称")
+    @Excel(name = "数据库名称")
+    @TableField("db_name")
+    private String dbName;
+    /**
+     * 数据库连接
+     */
+    @ColumnComment("数据库连接")
+    @Excel(name = "数据库连接")
+    @TableField(value = "db_url" , typeHandler = AESEncryptHandler.class)
+    private String dbUrl;
 
     /**
-     * 备注
+     * 数据库连接
      */
-    @TableField("note")
-    @Column(comment = "备注", type = MySqlTypeConstant.VARCHAR, length = 255)
-    private String note;
+    @ColumnComment("数据库连接地址")
+    @Excel(name = "数据库连接地址")
+    @TableField(value = "jdbc_url" , typeHandler = AESEncryptHandler.class)
+    private String jdbcUrl;
 
     /**
-     * 类型
+     * 数据库用户名
      */
-    @TableField("type")
-    @Column(comment = "类型", type = MySqlTypeConstant.VARCHAR, length = 20)
-    private String type;
+    @ColumnComment("数据库用户名")
+    @Excel(name = "数据库用户名")
+    @TableField(value = "db_username" , typeHandler = AESEncryptHandler.class)
+    private String dbUsername;
+    /**
+     * 数据库密码
+     */
+    @ColumnComment("数据库密码")
+    @Excel(name = "数据库密码")
+    @TableField(value = "db_passwd" , typeHandler = AESEncryptHandler.class)
+    private String dbPasswd;
+    /**
+     * 数据库连接端口
+     */
+    @ColumnComment("数据库连接端口")
+    @Excel(name = "数据库连接端口")
+    @TableField("db_port")
+    private String dbPort;
 
     /**
-     * 详细信息
+     * 数据库类型
      */
-    @TableField("detail")
-    @Column(comment = "详细信息", type = MySqlTypeConstant.VARCHAR, length = 1024)
-    private String detail;
+    @ColumnComment("数据库类型")
+    @Excel(name = "数据库类型")
+    @TableField("db_type")
+    private String dbType;
+
+    @ColumnComment("作者名")
+    @Excel(name = "作者名")
+    @TableField("author")
+    private String author;
+
 }

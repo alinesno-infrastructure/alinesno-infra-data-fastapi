@@ -28,6 +28,12 @@
 			<version>${revision}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alinesno.infra.common</groupId>
+			<artifactId>alinesno-infra-common-security-mapper</artifactId>
+			<version>${revision}</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

@@ -21,7 +21,17 @@ var managerUrl = {
     removeUrl: prefix + "delete" ,
     exportUrl: prefix + "exportExcel",
     changeField: prefix + "changeField",
-    downloadfile: prefix + "downloadfile"
+    downloadfile: prefix + "downloadfile",
+    checkDBUrl: prefix + "checkDB",
+}
+
+//检查配置
+export function checkDbConfig(data) {
+  return request({
+    url: managerUrl.checkDBUrl,
+    method: 'post',
+    data: data
+  })
 }
 
 // 查询数据库列表

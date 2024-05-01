@@ -33,10 +33,35 @@
 
             <el-table v-loading="loading" :data="DatasourceList" @selection-change="handleSelectionChange">
                <el-table-column type="selection" width="50" align="center" />
-               <el-table-column label="图标" align="center" with="80" key="status" v-if="columns[5].visible">
+               <el-table-column label="描述" align="left" width="350" key="status" v-if="columns[5].visible">
+                  <template #default="scope">
+                     <div style="line-height:35px">
+                        <img v-if="scope.row.dbType === 'MySQL'" 
+                           style="width:35px;position: absolute; height:35px" 
+                           src="http://data.linesno.com/icons/mysql.png" />
+                        <img v-else 
+                           style="width:35px;position: absolute; height:35px" 
+                           src="http://data.linesno.com/icons/mysql.png" />
+                        <span style="padding-left:45px">
+                        {{ scope.row.dbDesc }}
+                        </span>
+                     </div>
+                  </template>
                </el-table-column>
 
                <!-- 业务字段-->
+               <el-table-column label="数据库" align="left"  prop="dbName" :show-overflow-tooltip="true" />
+               <el-table-column label="类型" align="left" width="100" prop="dbType"/>
+               <el-table-column label="状态" align="center" width="120" prop="hasStatus">
+                  <template #default="scope">
+                     <div>
+                        <el-progress v-if="scope.row.hasStatus === 0" :text-inside="false" :stroke-width="20" status="success" :percentage="100"></el-progress>
+                        <el-progress v-if="scope.row.hasStatus === 1" :text-inside="false" :stroke-width="20" status="exception" :percentage="100"></el-progress>
+                     </div>
+                  </template>
+               </el-table-column>
+
+               <!-- 
                <el-table-column label="应用名称" align="center" key="dbName" prop="dbName" v-if="columns[0].visible" />
                <el-table-column label="应用描述" align="center" key="dbDesc" prop="dbDesc" v-if="columns[1].visible" :show-overflow-tooltip="true" />
                <el-table-column label="表数据量" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
@@ -48,7 +73,8 @@
                   <template #default="scope">
                      <span>{{ parseTime(scope.row.addTime) }}</span>
                   </template>
-               </el-table-column>
+               </el-table-column> 
+               -->
 
                <!-- 操作字段  -->
                <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
@@ -71,7 +97,7 @@
 
       <!-- 添加或修改应用配置对话框 -->
       <el-dialog :title="title" v-model="open" width="900px" append-to-body>
-         <el-form :model="form" :rules="rules" ref="databaseRef" label-width="100px">
+         <!-- <el-form :model="form" :rules="rules" ref="databaseRef" label-width="100px">
             <el-row>
                <el-col :span="24">
                   <el-form-item label="名称" prop="dbName">
@@ -111,10 +137,41 @@
                   </el-form-item>
                </el-col>
             </el-row>
-         </el-form>
+         </el-form> -->
+
+         <el-form ref="databaseRef" :model="form" :rules="rules" label-width="100px">
+
+            <el-form-item label="描述" prop="dbDesc">
+            <el-input v-model="form.dbDesc" placeholder="数据库描述"/>
+            </el-form-item>
+
+            <el-form-item label="类型" prop="dbType">
+            <el-select v-model="form.dbType" placeholder="请选择数据库类型">
+               <!-- <el-option label="MySQL" :value="form.dbType" /> -->
+               <el-option label="MySQL" value="MySQL" />
+               <el-option label="DaMeng" value="DaMeng" />
+               <el-option label="Oracle" value="Oracle" />
+            </el-select>
+            </el-form-item>
+
+            <el-form-item label="连接" prop="jdbcUrl">
+            <el-input v-model="form.jdbcUrl" placeholder="jdbc:mysql://localhost:3306/dbName?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=GMT"/>
+            </el-form-item>
+
+            <el-form-item label="用户名" prop="dbUsername">
+            <el-input v-model="form.dbUsername" auto-complete="new-password" placeholder="数据库用户名"/>
+            </el-form-item>
+            <el-form-item label="密码" prop="dbPasswd">
+            <el-input type="password" auto-complete="new-password" v-model="form.dbPasswd" placeholder="数据库密码"/>
+            </el-form-item>
+
+            </el-form>
          <template #footer>
             <div class="dialog-footer">
-               <el-button type="primary" @click="submitForm">确 定</el-button>
+               <!-- <el-button type="primary" @click="submitForm">确 定</el-button>
+               <el-button @click="cancel">取 消</el-button> -->
+               <el-button type="text" @click="validateDburl">请先点击验证数据库是否连通</el-button>
+               <el-button type="primary" @click="submitForm" :disabled="!btnChangeEnable">确 定</el-button>
                <el-button @click="cancel">取 消</el-button>
             </div>
          </template>
@@ -129,6 +186,7 @@ import {
    listDatasource,
    delDatasource,
    getDatasource,
+   checkDbConfig,
    updateDatasource,
    addDatasource
 } from "@/api/data/fastapi/datasource";
@@ -147,6 +205,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
+const btnChangeEnable = ref(false)
 const postOptions = ref([]);
 const roleOptions = ref([]);
 
@@ -258,6 +317,28 @@ function handleUpdate(row) {
       form.value = response.data;
       open.value = true;
       title.value = "修改应用";
+   });
+};
+
+/** 提交按钮 */
+function validateDburl() {
+   proxy.$refs["databaseRef"].validate(valid => {
+      if (valid) {
+
+         if(!form.dbType){
+            form.value.dbType = 'MySQL' ;
+         }
+
+         checkDbConfig(form.value).then(resp=>{
+            if (resp.data.accepted){
+               proxy.$modal.msgSuccess("数据库校验成功");
+               btnChangeEnable.value = true ;
+            }else{
+               proxy.$modal.msgSuccess(resp.msg);
+            }
+         })
+
+      }
    });
 };
 
