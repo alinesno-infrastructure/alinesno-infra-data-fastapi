@@ -131,7 +131,7 @@ import {
    getApplication,
    updateApplication,
    addApplication
-} from "@/api/data/fastapi/application";
+} from "@/api/data/fastapi/project";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
