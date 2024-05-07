@@ -93,10 +93,10 @@ export const constantRoutes = [
         meta: { title: '数据源管理', icon: 'dashboard', affix: true }
       }, 
       {
-        path: '/data/fastapi/application/index',
-        component: () => import('@/views/data/fastapi/application/index'),
-        name: '/data/fastapi/application/index',
-        meta: { title: '应用管理', icon: 'dashboard', affix: true }
+        path: '/data/fastapi/project/index',
+        component: () => import('@/views/data/fastapi/project/index'),
+        name: '/data/fastapi/project/index',
+        meta: { title: '项目管理', icon: 'dashboard', affix: true }
       }, 
       {
         path: '/data/fastapi/group/index',
