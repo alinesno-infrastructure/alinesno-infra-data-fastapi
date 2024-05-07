@@ -22,7 +22,7 @@ const router = useRouter();
 
 // 菜单列表
 const menuItems = ref([
-  {id:'2' , icon:'fa-brands fa-slack' , link:'/data/fastapi/application/index' , desc:'应用管理'},
+  {id:'2' , icon:'fa-brands fa-slack' , link:'/data/fastapi/project/index' , desc:'项目管理'},
   {id:'4' , icon:'fa-regular fa-envelope-open' , link:'/data/fastapi/api/index' , desc:'API管理'},
   {id:'14' , icon:'fa-brands fa-skype' , link:'/data/fastapi/group/index' , desc:'接口分组'},
   {id:'5' , icon:'fa-solid fa-file-word' , link:'/data/fastapi/function/index' , desc:'UDF管理'}, 

@@ -9,7 +9,7 @@
           <div class="panel-body" style="height: auto;position: relative;">
               <div class="direct-box">
                 <ul>
-                  <li class="box-item" v-for="item in directContent" :key="item">
+                  <li class="box-item" v-for="item in attractiveFeatures" :key="item">
                     <div class="dire-panel">
                       <div class="panel-title">
                         <i class="dire-panel-icon" :class="item.icon" :alt="item.name" />
@@ -32,7 +32,7 @@
           <div class="panel-body" style="height: auto;position: relative;">
             <div class="acp-app-list">
               <ul>
-                <li class="app-items" style="width:100%" v-for="item in apps" :key="item">
+                <li class="app-items" style="width:100%" v-for="item in dbapiScenario" :key="item">
                   <div class="app-info">
                     <div class="app-item-title">
                         <i :class="item.icon" :alt="item.name" />
@@ -54,18 +54,18 @@
 
 <script setup>
 
-const directContent = ref([
-  { icon: 'fa-brands fa-slack', name: '智能鉴黄', desc: '识别文本中的色情行为描述、色情资源链接、低俗交友、污秽文爱等涉黄内容' },
-  { icon: 'fa-solid fa-list-check', name: '违禁违规', desc: '识别暴力行为、恐怖描述、赌博、毒品、枪支弹药等违禁文字内容' },
-  { icon: 'fa-solid fa-at', name: '恶意推广', desc: '识别带有售卖意向的软文广告、微信/QQ/联系方式等违规广告，支持包含符号、图标等变异广告' },
-  { icon: 'fa-solid fa-list-check', name: '低俗辱骂', desc: '识别文本中的侮辱谩骂、人身攻击、消极宣泄等不良内容' },
-  { icon: 'fa-solid fa-file-word', name: '低质灌水', desc: '识别网络社区常见的乱码、水帖、刷屏等无意义的灌水信息' },
-]);
+const attractiveFeatures = [
+  { icon: 'fa-solid fa-cogs', name: '零代码开发', desc: '无需编写代码，只需在页面上编写SQL，即可转化成HTTP API，极大简化了后端接口开发流程' },
+  { icon: 'fa-solid fa-server', name: '动态API管理', desc: '支持动态创建、编辑、下线、删除API，并实现动态发布，无需重启服务，提升了接口管理的灵活性和效率' },
+  { icon: 'fa-solid fa-database', name: '全数据库支持', desc: '支持所有JDBC协议的数据库，包括主流的mysql、postgresql、oracle等，覆盖面广，适用性强' },
+  { icon: 'fa-solid fa-user-tie', name: '客户端管理', desc: '可创建多客户端，并授权其访问API，监控客户端调用记录，统计API调用信息，有助于管理和监控数据服务的使用情况' },
+  { icon: 'fa-solid fa-cogs', name: '丰富插件扩展', desc: '支持多种插件，如数据转换、缓存、告警等，提供了更多扩展功能，满足不同场景下的需求' },
+];
 
-const apps = ref([
-  { icon: 'fa-solid fa-eye-slash', name: '智能内容审核', desc: '识别文章内容中的违规信息、低俗内容、暴力内容等敏感信息' },
-  { icon: 'fa-solid fa-user-shield', name: '注册信息检测', desc: '识别注册信息中的违规内容、虚假信息等不当信息' },
-  { icon: 'fa-solid fa-comment-slash', name: '评论过滤系统', desc: '过滤用户评论中的不良言论、侮辱性内容、广告等信息' },
-]);
+const dbapiScenario = [
+  { icon: 'fa-solid fa-eye-slash', name: '企业数据服务管理', desc: '作为企业数据服务的管理中心，提供动态创建发布API、监控客户端调用记录等功能' },
+  { icon: 'fa-solid fa-user-shield', name: '后端接口开发', desc: '为数仓开发人员提供低代码工具，通过简单的页面配置和SQL编写，生成后端接口' },
+  { icon: 'fa-solid fa-comment-slash', name: '测试环境到生产环境迁移', desc: '支持API配置的导入导出，方便测试环境到生产环境的API迁移，简化了部署和管理流程' },
+];
 
 </script>

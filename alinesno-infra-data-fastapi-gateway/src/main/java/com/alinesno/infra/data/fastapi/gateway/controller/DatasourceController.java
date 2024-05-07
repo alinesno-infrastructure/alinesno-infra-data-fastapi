@@ -46,7 +46,6 @@ public class DatasourceController extends BaseController<DatasourceEntity, IData
      * @param page DatatablesPageBean对象。
      * @return 包含DataTables数据的TableDataInfo对象。
      */
-    @ResponseBody
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
@@ -54,7 +53,6 @@ public class DatasourceController extends BaseController<DatasourceEntity, IData
     }
 
     @PostMapping("/checkDB")
-    @ResponseBody
     public AjaxResult checkDBConnect(@Validated @RequestBody DatasourceDto dto ) {
 
         DatasourceEntity dbListEntity = new DatasourceEntity() ;
@@ -71,23 +69,30 @@ public class DatasourceController extends BaseController<DatasourceEntity, IData
     }
 
     @PutMapping("/modifyDb")
-    @ResponseBody
     public AjaxResult modifyDb(@Validated @RequestBody DatasourceDto dto ) {
 
-        DatasourceEntity dbListEntity = new DatasourceEntity() ;
+        DatasourceEntity dbEntity = new DatasourceEntity() ;
 
-        BeanUtils.copyProperties(dto, dbListEntity) ;
-        DbParserUtils.parserJdbcUrl(dbListEntity , dto.getJdbcUrl()) ;
+        BeanUtils.copyProperties(dto, dbEntity) ;
+        DbParserUtils.parserJdbcUrl(dbEntity , dto.getJdbcUrl()) ;
 
         try {
-            return super.update(null, dbListEntity) ;
+            return super.update(null, dbEntity) ;
         } catch (Exception e) {
             throw new RpcServiceRuntimeException(e.getMessage()) ;
         }
     }
 
+    /**
+     * 获取到所有数据库源
+     * @return
+     */
+    @GetMapping("/allDatasource")
+    public AjaxResult allDatasource(){
+        return AjaxResult.success(service.list()) ;
+    }
+
     @PostMapping("/saveDb")
-    @ResponseBody
     public AjaxResult saveDb(@Validated @RequestBody DatasourceDto dto ) {
 
         DatasourceEntity dbListEntity = new DatasourceEntity() ;

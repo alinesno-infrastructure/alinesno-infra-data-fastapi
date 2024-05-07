@@ -79,11 +79,11 @@
                <!-- 操作字段  -->
                <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
                   <template #default="scope">
-                     <el-tooltip content="修改" placement="top" v-if="scope.row.DatasourceId !== 1">
+                     <el-tooltip content="修改" placement="top" v-if="scope.row.id !== 1">
                         <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
                            v-hasPermi="['system:Datasource:edit']"></el-button>
                      </el-tooltip>
-                     <el-tooltip content="删除" placement="top" v-if="scope.row.DatasourceId !== 1">
+                     <el-tooltip content="删除" placement="top" v-if="scope.row.id !== 1">
                         <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
                            v-hasPermi="['system:Datasource:remove']"></el-button>
                      </el-tooltip>
@@ -312,8 +312,8 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
    reset();
-   const DatasourceId = row.id || ids.value;
-   getDatasource(DatasourceId).then(response => {
+   const id = row.id || ids.value;
+   getDatasource(id).then(response => {
       form.value = response.data;
       open.value = true;
       title.value = "修改应用";
@@ -346,7 +346,7 @@ function validateDburl() {
 function submitForm() {
    proxy.$refs["databaseRef"].validate(valid => {
       if (valid) {
-         if (form.value.DatasourceId != undefined) {
+         if (form.value.id != undefined) {
             updateDatasource(form.value).then(response => {
                proxy.$modal.msgSuccess("修改成功");
                open.value = false;

@@ -55,6 +55,27 @@ public class ApiConfigController extends BaseController<ApiConfigEntity, IApiCon
         return AjaxResult.success("success" , groupService.selectCatalogTreeList()) ;
     }
 
+    /**
+     * 更新执行sql操作
+     * @param entity
+     * @param id
+     * @return
+     */
+    @PostMapping("/updateExecuteSql")
+    public AjaxResult updateExecuteSql(@RequestBody ApiConfigEntity entity , String id){
+
+        log.debug("id = {}" , id);
+        log.debug("entity = {}" , entity);
+
+        ApiConfigEntity apiConfigEntity = service.getById(id) ;
+
+        apiConfigEntity.setDatasourceId(entity.getDatasourceId());
+        apiConfigEntity.setRunSql(entity.getRunSql());
+        apiConfigEntity.setOpenTran(entity.isOpenTran());
+
+        return AjaxResult.success() ;
+    }
+
     @Override
     public IApiConfigService getFeign() {
         return this.service;

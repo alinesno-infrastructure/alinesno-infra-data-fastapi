@@ -13,8 +13,8 @@ var prefix = '/api/infra/data/fastapi/datasource/' ;
 var managerUrl = {
     datatables : prefix +"datatables" ,
     createUrl: prefix + 'add' ,
-    saveUrl: prefix + 'save' ,
-    updateUrl: prefix +"modify" ,
+    saveUrl: prefix + 'saveDb' ,
+    updateUrl: prefix +"modifyDb" ,
     statusUrl: prefix +"changeStatus" ,
     cleanUrl: prefix + "clean",
     detailUrl: prefix +"detail",
@@ -22,7 +22,16 @@ var managerUrl = {
     exportUrl: prefix + "exportExcel",
     changeField: prefix + "changeField",
     downloadfile: prefix + "downloadfile",
+    allDatasource: prefix + "allDatasource",
     checkDBUrl: prefix + "checkDB",
+}
+
+// 获取到所有数据源库
+export function allDatasource(){
+  return request({
+    url: managerUrl.allDatasource , 
+    method: 'get'
+  })
 }
 
 //检查配置
@@ -30,7 +39,7 @@ export function checkDbConfig(data) {
   return request({
     url: managerUrl.checkDBUrl,
     method: 'post',
-    data: data
+    data: dataovrn
   })
 }
 

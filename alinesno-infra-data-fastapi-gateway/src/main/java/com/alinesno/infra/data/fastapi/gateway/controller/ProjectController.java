@@ -3,9 +3,11 @@ package com.alinesno.infra.data.fastapi.gateway.controller;
 import com.alinesno.infra.common.core.constants.SpringInstanceScope;
 import com.alinesno.infra.common.facade.pageable.DatatablesPageBean;
 import com.alinesno.infra.common.facade.pageable.TableDataInfo;
+import com.alinesno.infra.common.web.adapter.login.account.CurrentAccountJwt;
 import com.alinesno.infra.common.web.adapter.rest.BaseController;
-import com.alinesno.infra.data.fastapi.entity.ApplicationEntity;
-import com.alinesno.infra.data.fastapi.service.IApplicationService;
+import com.alinesno.infra.data.fastapi.entity.ProjectEntity;
+import com.alinesno.infra.data.fastapi.service.IProjectService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -27,11 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @Scope(SpringInstanceScope.PROTOTYPE)
-@RequestMapping("/api/infra/data/fastapi/application")
-public class ApplicationController extends BaseController<ApplicationEntity, IApplicationService> {
+@RequestMapping("/api/infra/data/fastapi/project")
+public class ProjectController extends BaseController<ProjectEntity, IProjectService> {
 
     @Autowired
-    private IApplicationService service;
+    private IProjectService service;
 
     /**
      * 获取BusinessLogEntity的DataTables数据。
@@ -45,11 +47,20 @@ public class ApplicationController extends BaseController<ApplicationEntity, IAp
     @PostMapping("/datatables")
     public TableDataInfo datatables(HttpServletRequest request, Model model, DatatablesPageBean page) {
         log.debug("page = {}", ToStringBuilder.reflectionToString(page));
+
+        long userId = CurrentAccountJwt.getUserId();
+        long count = service.count(new LambdaQueryWrapper<ProjectEntity>().eq(ProjectEntity::getOperatorId , userId));
+
+        // 初始化默认应用
+        if (count == 0) {
+            service.initDefaultApp(CurrentAccountJwt.getUserId());
+        }
+
         return this.toPage(model, this.getFeign(), page);
     }
 
     @Override
-    public IApplicationService getFeign() {
+    public IProjectService getFeign() {
         return this.service;
     }
 }

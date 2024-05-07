@@ -23,6 +23,7 @@
     <modules>
         <!-- 应用服务 -->
         <module>alinesno-infra-data-fastapi-facade</module>  <!-- 接口和引用 -->
+        <module>alinesno-infra-data-fastapi-plugins</module>  <!-- 插件和过滤层 -->
         <module>alinesno-infra-data-fastapi-domain</module>  <!-- 领域服务 -->
         <module>alinesno-infra-data-fastapi-adapter</module> <!-- 适配层 -->
         <module>alinesno-infra-data-fastapi-gateway</module>  <!-- 接口服务 -->

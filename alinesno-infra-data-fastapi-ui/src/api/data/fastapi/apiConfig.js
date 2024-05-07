@@ -22,7 +22,26 @@ var managerUrl = {
     exportUrl: prefix + "exportExcel",
     changeField: prefix + "changeField",
     catalogTreeSelect: prefix + "catalogTreeSelect",
-    downloadfile: prefix + "downloadfile"
+    downloadfile: prefix + "downloadfile",
+    updateExecuteSql: prefix + "updateExecuteSql",
+}
+
+// 更新api执行sql
+export function updateExecuteSql(data , id){
+  return request({
+    url: managerUrl.updateExecuteSql + "?id=" + parseStrEmpty(id) ,
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改字段
+export function changStatusField(data){
+  return request({
+    url: managerUrl.changeField ,
+    method: 'post',
+    data: data
+  })
 }
 
 // 查询部门下拉树结构
