@@ -282,7 +282,6 @@ function getList() {
 // 节点单击事件
 function handleNodeClick(data) {
    queryParams.value.catalogId = data.id;
-   console.log('data.id = ' + data.id)
    getList();
 }
 
@@ -412,7 +411,11 @@ const handleChangStatusField = async (field, value, id) => {
 
 /** 提交sql执行表单 */
 const submitSqlExecuteForm = () => {
-   sqlEditorRef.value.submitForm(currentPostId.value);
+   var result = sqlEditorRef.value.submitForm(currentPostId.value);
+   if (  result == undefined || result  ) {
+     promptOpen.value = false ;
+     getList();
+   }
 }
 
 

@@ -1,5 +1,4 @@
 <template>
-
     <div>
         <el-form :model="form" :rules="rules" ref="executeRef" label-width="120px">
             <el-row>
@@ -19,14 +18,30 @@
 
             <el-row>
                <el-col :span="24">
-                  <el-form-item label="执行SQL" prop="runSql">
-                     <el-input 
-                        type="textarea" 
-                        :autosize="{minRows:10,maxRows:20}"
-                        v-model="form.runSql" 
-                        placeholder="请输入指令名称" 
-                        maxlength="500" />
-                  </el-form-item>
+                   <el-form-item label="执行SQL" prop="runSql">
+                     <el-tabs
+                         v-model="editableTabsValue"
+                         type="card"
+                         editable
+                         @edit="handleTabsEdit"
+                         tab-position="top"
+                     >
+                   <el-tab-pane
+                       v-for="(item, index) in editableTabs"
+                       :key="item.index"
+                       :label="item.name"
+                       :name="item.name"
+                   >
+                     <el-input
+                         type="textarea"
+                         :autosize="{minRows:10,maxRows:20}"
+                         v-model="item.runSql"
+                         placeholder="请输入指令名称"
+                         style="width: 865px"
+                         maxlength="500" />
+                   </el-tab-pane>
+                 </el-tabs>
+                 </el-form-item>
                </el-col>
             </el-row>
 
@@ -55,7 +70,6 @@ import {
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-
 const datasourceList = ref([]);
 
 const props = defineProps({
@@ -67,45 +81,117 @@ const props = defineProps({
 
 const data = reactive({
    form: {
-      name: '' , 
-      path: '' ,
+     datasourceId:'',
+     runSql:'',
+     openTran:0,
    },
    queryParams: {
       pageNum: 1,
       pageSize: 10,
-      runSql: undefined,
-      promptDesc: undefined,
-      catalogId: undefined
+      datasourceId: '',
+      runSql: '',
+      openTran: 0
    },
    rules: {
-      runSql: [{ required: true, message: "名称不能为空", trigger: "blur" }] ,
-      dataSourceApi: [{ required: true, message: "连接不能为空", trigger: "blur" }],
-      contentType: [{ required: true, message: "类型不能为空", trigger: "blur" }] ,
-      promptDesc: [{ required: true, message: "备注不能为空", trigger: "blur" }]
+      datasourceId: [{ required: true, message: "数据源不能为空", trigger: "blur" }],
+      runSql: [{ required: true, message: "SQL不能为空", trigger: "blur" }] ,
+      openTran: [{ required: true, message: "事务不能为空", trigger: "blur" }]
    }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
+const editableTabsValue = ref('SQL-0') ;
+
+const editableTabs = ref([
+  { name: 'SQL-0',"runSql":"SELECT now()"}
+])
+
+onMounted(() => {
+  reset();
+  form.value.datasourceId = props.currentApiConfigContent.datasourceId ;
+  form.value.runSql = props.currentApiConfigContent.runSql ;
+  form.value.openTran = props.currentApiConfigContent.openTran ;
+  if ( props.currentApiConfigContent.runSql != null && props.currentApiConfigContent.runSql != undefined && props.currentApiConfigContent.runSql != '' ){
+     editableTabs.value = JSON.parse(props.currentApiConfigContent.runSql)
+  }
+})
+
+function  reset() {
+  form.value = {
+    datasourceId:'',
+    runSql:'',
+    openTran:0,
+  };
+  proxy.resetForm("executeRef");
+}
+
+
+
 /** 获取到所有数据源 */
 function handleAllDatasource() {
    allDatasource().then(res => {
-      console.log('res = ' + res) ;
       datasourceList.value = res.data ;
    })
 }
 
 /** 提交按钮 */
 function submitForm(id) {
-   proxy.$refs["executeRef"].validate(valid => {
+  let check = true ;
+  for(var i = 0; i < editableTabs.value.length; i++){
+    if ( editableTabs.value[i].runSql == null || editableTabs.value[i].runSql == undefined || editableTabs.value[i].runSql == '' ) {
+      proxy.$modal.msgError("请填写"+ editableTabs.value[i].name + "的执行SQL!");
+      check = false;
+      break ;
+    }
+
+  }
+
+  if ( check ) {
+    form.value.runSql =  JSON.stringify(editableTabs.value) ;
+    proxy.$refs["executeRef"].validate(valid => {
       if (valid) {
-         updateExecuteSql(form.value , id).then(response => {
-            proxy.$modal.msgSuccess("修改成功");
-            open.value = false;
-         });
+        updateExecuteSql(form.value , id).then(response => {
+          return check ;
+        });
       }
-   });
+    });
+  } else {
+    return false
+  }
+
 };
+
+function handleTabsEdit (targetName, action)  {
+  if (action === 'add') {
+    const newTabName = "SQL-"+`${editableTabs.value.length}`
+    editableTabs.value.push({
+      "name":newTabName,
+      "runSql":""
+    })
+    editableTabsValue.value = newTabName
+  } else if (action === 'remove') {
+    let tabs = editableTabs.value;
+
+    let activeName = editableTabsValue.value;
+    if (activeName === targetName) {
+      tabs.forEach((tab, index) => {
+        if (tab.name === targetName) {
+          const nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = nextTab.name
+          }
+        }
+      })
+    }
+
+    editableTabsValue.value = activeName
+    editableTabs.value = tabs.filter((tab) => {
+      return tab.name !== targetName
+    })
+
+  }
+}
 
 
 handleAllDatasource() ;

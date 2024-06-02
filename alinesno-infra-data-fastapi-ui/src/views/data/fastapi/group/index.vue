@@ -1,16 +1,16 @@
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-         <el-form-item label="分类名称" prop="name">
+         <el-form-item label="分组名称" prop="name">
             <el-input
                v-model="queryParams.name"
-               placeholder="请输入分类名称"
+               placeholder="请输入分组名称"
                clearable
                @keyup.enter="handleQuery"
             />
          </el-form-item>
          <el-form-item label="状态" prop="hasStatus">
-            <el-select v-model="queryParams.hasStatus" placeholder="分类状态" clearable>
+            <el-select v-model="queryParams.hasStatus" placeholder="分组状态" clearable>
                <el-option
                   v-for="dict in sys_normal_disable"
                   :key="dict.value"
@@ -54,12 +54,12 @@
          :default-expand-all="isExpandAll"
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
 
-         <el-table-column prop="name" label="分类名称">
+         <el-table-column prop="name" label="分组名称">
             <template #default="scope">
                {{ scope.row.name }}
             </template>
          </el-table-column>
-         <el-table-column prop="description" label="类型描述" ></el-table-column>
+         <el-table-column prop="description" label="分组描述" ></el-table-column>
          <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
          <el-table-column prop="hasStatus" label="状态" width="100">
             <template #default="scope">
@@ -96,30 +96,30 @@
          </el-table-column>
       </el-table>
 
-      <!-- 添加或修改分类对话框 -->
+      <!-- 添加或修改分组对话框 -->
       <el-dialog :title="title" v-model="open" width="600px" append-to-body>
          <el-form ref="deptRef" :model="form" :rules="rules" label-width="80px">
             <el-row>
                <el-col :span="24" v-if="form.parentId !== 0">
-                  <el-form-item label="上级分类" prop="parentId">
+                  <el-form-item label="上级分组" prop="parentId">
                      <el-tree-select
                         v-model="form.parentId"
                         :data="deptOptions"
                         :props="{ value: 'id', label: 'name', children: 'children' }"
                         value-key="id"
-                        placeholder="选择上级分类"
+                        placeholder="选择上级分组"
                         check-strictly
                      />
                   </el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item label="分类名称" prop="name">
-                     <el-input v-model="form.name" placeholder="请输入分类名称" />
+                  <el-form-item label="分组名称" prop="name">
+                     <el-input v-model="form.name" placeholder="请输入分组名称" />
                   </el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item label="类型描述" prop="name">
-                     <el-input v-model="form.description" placeholder="请输入分类描述" />
+                  <el-form-item label="分组描述" prop="name">
+                     <el-input v-model="form.description" placeholder="请输入分组描述" />
                   </el-form-item>
                </el-col>
                <el-col :span="24">
@@ -128,7 +128,7 @@
                   </el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item label="分类状态">
+                  <el-form-item label="分组状态">
                      <el-radio-group v-model="form.hasStatus">
                         <el-radio
                            v-for="dict in sys_normal_disable"
@@ -172,17 +172,15 @@ const data = reactive({
     hasStatus: undefined
   },
   rules: {
-    parentId: [{ required: true, message: "上级分类不能为空", trigger: "blur" }],
-    name: [{ required: true, message: "分类名称不能为空", trigger: "blur" }],
-    orderNum: [{ required: true, message: "显示排序不能为空", trigger: "blur" }],
-    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-    phone: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+    parentId: [{ required: false, message: "上级分组不能为空", trigger: "blur" }],
+    name: [{ required: true, message: "分组名称不能为空", trigger: "blur" }],
+    orderNum: [{ required: true, message: "显示排序不能为空", trigger: "blur" }]
   },
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询分类列表 */
+/** 查询分组列表 */
 function getList() {
   loading.value = true;
   listApiGroup(queryParams.value).then(response => {
@@ -203,8 +201,6 @@ function reset() {
     name: undefined,
     orderNum: 0,
     leader: undefined,
-    phone: undefined,
-    email: undefined,
     hasStatus: "0"
   };
   proxy.resetForm("deptRef");
@@ -228,7 +224,7 @@ function handleAdd(row) {
     form.value.parentId = row.id;
   }
   open.value = true;
-  title.value = "添加分类";
+  title.value = "添加分组";
 }
 /** 展开/折叠操作 */
 function toggleExpandAll() {
@@ -247,7 +243,7 @@ function handleUpdate(row) {
   getApiGroup(row.id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改分类";
+    title.value = "修改分组";
   });
 }
 /** 提交按钮 */

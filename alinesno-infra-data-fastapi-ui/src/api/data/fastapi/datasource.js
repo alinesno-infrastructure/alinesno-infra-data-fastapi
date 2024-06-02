@@ -39,7 +39,7 @@ export function checkDbConfig(data) {
   return request({
     url: managerUrl.checkDBUrl,
     method: 'post',
-    data: dataovrn
+    data: data
   })
 }
 

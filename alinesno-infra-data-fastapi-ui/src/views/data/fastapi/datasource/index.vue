@@ -4,11 +4,11 @@
          <!--应用数据-->
          <el-col :span="24" :xs="24">
             <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="100px">
-               <el-form-item label="应用名称" prop="dbName">
-                  <el-input v-model="queryParams.dbName" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+               <el-form-item label="描述" prop="dbName">
+                  <el-input v-model="queryParams.dbName" placeholder="请输入描述" clearable style="width: 240px" @keyup.enter="handleQuery" />
                </el-form-item>
-               <el-form-item label="应用名称" prop="dbName">
-                  <el-input v-model="queryParams['condition[dbName|like]']" placeholder="请输入应用名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+               <el-form-item label="数据库名称" prop="dbName">
+                  <el-input v-model="queryParams['condition[dbName|like]']" placeholder="请输入数据库名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
                </el-form-item>
                <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -200,6 +200,7 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
+const dbDescs = ref([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
@@ -266,9 +267,10 @@ function resetQuery() {
 };
 /** 删除按钮操作 */
 function handleDelete(row) {
-   const DatasourceIds = row.id || ids.value;
-   proxy.$modal.confirm('是否确认删除应用编号为"' + DatasourceIds + '"的数据项？').then(function () {
-      return delDatasource(DatasourceIds);
+   const dbIds = row.id || ids.value;
+   const dbDescTmp = row.id || dbDescs.value;
+   proxy.$modal.confirm('是否确认删除应用编号为"' + dbDescTmp + '"的数据项？').then(function () {
+      return delDatasource(dbIds);
    }).then(() => {
       getList();
       proxy.$modal.msgSuccess("删除成功");
@@ -278,6 +280,7 @@ function handleDelete(row) {
 /** 选择条数  */
 function handleSelectionChange(selection) {
    ids.value = selection.map(item => item.id);
+   dbDescs.value = selection.map(item => item.dbDesc);
    single.value = selection.length != 1;
    multiple.value = !selection.length;
 };
@@ -306,7 +309,7 @@ function cancel() {
 function handleAdd() {
    reset();
    open.value = true;
-   title.value = "添加应用";
+   title.value = "添加数据源";
 };
 
 /** 修改按钮操作 */
@@ -316,7 +319,7 @@ function handleUpdate(row) {
    getDatasource(id).then(response => {
       form.value = response.data;
       open.value = true;
-      title.value = "修改应用";
+      title.value = "修改数据源";
    });
 };
 
@@ -324,7 +327,6 @@ function handleUpdate(row) {
 function validateDburl() {
    proxy.$refs["databaseRef"].validate(valid => {
       if (valid) {
-
          if(!form.dbType){
             form.value.dbType = 'MySQL' ;
          }

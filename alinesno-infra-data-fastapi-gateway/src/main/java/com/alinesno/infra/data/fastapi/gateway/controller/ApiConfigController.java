@@ -8,6 +8,7 @@ import com.alinesno.infra.common.web.adapter.rest.BaseController;
 import com.alinesno.infra.data.fastapi.entity.ApiConfigEntity;
 import com.alinesno.infra.data.fastapi.service.IApiConfigService;
 import com.alinesno.infra.data.fastapi.service.IApiGroupService;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -67,11 +68,12 @@ public class ApiConfigController extends BaseController<ApiConfigEntity, IApiCon
         log.debug("id = {}" , id);
         log.debug("entity = {}" , entity);
 
-        ApiConfigEntity apiConfigEntity = service.getById(id) ;
-
-        apiConfigEntity.setDatasourceId(entity.getDatasourceId());
-        apiConfigEntity.setRunSql(entity.getRunSql());
-        apiConfigEntity.setOpenTran(entity.isOpenTran());
+        UpdateWrapper<ApiConfigEntity> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("datasource_id",  entity.getDatasourceId());
+        updateWrapper.set("run_sql", entity.getRunSql());
+        updateWrapper.set("open_tran", entity.isOpenTran());
+        service.update(null, updateWrapper);
 
         return AjaxResult.success() ;
     }
